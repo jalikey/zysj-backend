@@ -5,6 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jalikey/zysj-backend/internal/repository" // !! 修改为你的模块路径
+	"github.com/jalikey/zysj-backend/internal/repository/models"
+
 )
 
 // GetCategories handles the GET request for retrieving all categories.

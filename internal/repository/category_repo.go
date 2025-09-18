@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"log"
-
+	"database/sql" // <--- 添加这一行
 	"github.com/jalikey/zysj-backend/internal/database" // !! 修改为你的模块路径
 	"github.com/jalikey/zysj-backend/internal/models"   // !! 修改为你的模块路径
 )
