@@ -17,7 +17,7 @@ func GetArticles(c *gin.Context) {
 	}
 	
 	if articles == nil {
-		articles = []repository.models.Article{}
+		articles = []models.Article{}
 	}
 
 	c.JSON(http.StatusOK, articles)
@@ -61,7 +61,7 @@ func SearchArticles(c *gin.Context) {
 	}
 
 	if articles == nil {
-		articles = []repository.models.Article{}
+		articles = []models.Article{}
 	}
 
 	c.JSON(http.StatusOK, articles)

@@ -18,7 +18,7 @@ func GetCategories(c *gin.Context) {
 
 	// If no categories are found, return an empty array instead of null
 	if categories == nil {
-		categories = []repository.models.Category{}
+		categories = []models.Category{}
 	}
 
 	c.JSON(http.StatusOK, categories)
@@ -48,7 +48,7 @@ func GetArticlesByCategory(c *gin.Context) {
 	}
     
     if articles == nil {
-		articles = []repository.models.Article{}
+		articles = []models.Article{}
 	}
 
 	// We can return the articles along with category info
