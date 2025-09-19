@@ -82,3 +82,88 @@ func GetCategoryBySlug(slug string) (models.Category, error) {
 
 	return category, nil
 }
+// ... (package and imports) ...
+
+// --- CUD Functions for Admin ---
+
+// CreateCategory inserts a new category and returns its ID.
+func CreateCategory(category models.Category) (int64, error) {
+	query := `INSERT INTO categories (name, slug, description, parent_id)
+			  VALUES ($1, $2, $3, $4) RETURNING id`
+	var categoryID int64
+	
+	var parentID sql.NullInt64
+	if category.ParentID.Valid {
+		parentID.Int64 = category.ParentID.Int64
+		parentID.Valid = true
+	}
+	
+	err := database.DB.QueryRow(context.Background(), query,
+		category.Name, category.Slug, category.Description, parentID).Scan(&categoryID)
+	if err != nil {
+		log.Printf("Error creating category: %v", err)
+		return 0, err
+	}
+	return categoryID, nil
+}
+
+// UpdateCategory updates an existing category.
+func UpdateCategory(category models.Category) error {
+	query := `UPDATE categories 
+			  SET name = $1, slug = $2, description = $3, parent_id = $4
+			  WHERE id = $5`
+
+	var parentID sql.NullInt64
+	if category.ParentID.Valid {
+		parentID.Int64 = category.ParentID.Int64
+		parentID.Valid = true
+	}
+
+	_, err := database.DB.Exec(context.Background(), query,
+		category.Name, category.Slug, category.Description, parentID, category.ID)
+	if err != nil {
+		log.Printf("Error updating category: %v", err)
+	}
+	return err
+}
+
+// DeleteCategory removes a category by its ID.
+func DeleteCategory(id int64) error {
+	query := `DELETE FROM categories WHERE id = $1`
+	_, err := database.DB.Exec(context.Background(), query, id)
+	if err != nil {
+		log.Printf("Error deleting category: %v", err)
+	}
+	return err
+}
+
+// ... (Existing Read functions remain unchanged) ...
+
+// ... (之前的 CUD 函数) ...
+
+// GetCategoryByID retrieves a single category by its primary key ID.
+func GetCategoryByID(id int64) (models.Category, error) {
+	query := `SELECT id, name, slug, description, parent_id, created_at FROM categories WHERE id = $1`
+	var category models.Category
+	var parentID sql.NullInt64
+
+	row := database.DB.QueryRow(context.Background(), query, id)
+	err := row.Scan(
+		&category.ID,
+		&category.Name,
+		&category.Slug,
+		&category.Description,
+		&parentID,
+		&category.CreatedAt,
+	)
+
+	if err != nil {
+		return models.Category{}, err
+	}
+    
+    if parentID.Valid {
+        category.ParentID = models.NullInt64{Int64: parentID.Int64, Valid: true}
+    }
+
+	return category, nil
+}

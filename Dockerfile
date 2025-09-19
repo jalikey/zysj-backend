@@ -7,8 +7,10 @@ WORKDIR /app
 
 # Copy go.mod and go.sum files to download dependencies first
 COPY go.mod go.sum ./
-RUN go mod download
-
+#RUN export GOPROXY=https://goproxy.cn,direct
+#RUN export all_proxy="socks5://127.0.0.1:10808"
+RUN export GOPROXY=https://goproxy.cn,direct && go mod download
+#RUN unset all_proxy
 # Copy the entire source code
 COPY . .
 

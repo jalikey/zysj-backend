@@ -32,16 +32,53 @@ func main() {
 		})
 	})
 	
+	// Public API routes
 	apiV1 := router.Group("/api/v1")
 	{
-		// 新增搜索路由，放在前面
-		apiV1.GET("/search", handlers.SearchArticles) 
+		apiV1.POST("/login", handlers.Login)
 
+		apiV1.GET("/search", handlers.SearchArticles)
 		apiV1.GET("/categories", handlers.GetCategories)
 		apiV1.GET("/categories/:slug", handlers.GetArticlesByCategory)
-		
+		// We keep the public GET routes for articles for simplicity
 		apiV1.GET("/articles", handlers.GetArticles)
 		apiV1.GET("/articles/:id", handlers.GetArticleByID)
+	}
+
+	// Admin API routes
+	adminV1 := router.Group("/api/v1/admin")
+	adminV1.Use(handlers.AuthMiddleware())
+	{
+		// Dashboard test route
+		adminV1.GET("/dashboard", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"message": "Welcome to the admin dashboard!"})
+		})
+
+		// Articles CRUD
+		// GET is already public, but we can add it here too if we want admin-specific logic later
+		adminV1.GET("/articles", handlers.GetArticles) 
+		adminV1.POST("/articles", handlers.CreateArticle)
+		adminV1.PUT("/articles/:id", handlers.UpdateArticle)
+		adminV1.DELETE("/articles/:id", handlers.DeleteArticle)
+
+	// Categories CRUD
+		adminV1.GET("/categories", handlers.GetCategories) 
+		adminV1.GET("/categories/:id", handlers.GetCategoryByID) // 新增路由
+		adminV1.POST("/categories", handlers.CreateCategory)
+		adminV1.PUT("/categories/:id", handlers.UpdateCategory)
+		adminV1.DELETE("/categories/:id", handlers.DeleteCategory)
+	}
+
+	// Admin API routes
+	adminV1 := router.Group("/api/v1/admin")
+	adminV1.Use(handlers.AuthMiddleware()) // Apply auth middleware to this group
+	{
+		// Test route to check if middleware works
+		adminV1.GET("/dashboard", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"message": "Welcome to the admin dashboard!"})
+		})
+
+		// TODO: Add CRUD routes for articles and categories here in the next step
 	}
 
 
